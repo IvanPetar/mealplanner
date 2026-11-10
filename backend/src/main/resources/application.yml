@@ -1,0 +1,32 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: mealplanner
+
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5433/mealplanner}
+    username: mealplanner
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+server:
+  port: 8081
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 900000
+  refresh-expiration: 604800000
+
+openai:
+  base-url: https://api.groq.com/openai
+  api-key: ${OPENAI_API_KEY}
+  model: openai/gpt-oss-20b

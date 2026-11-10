@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: mealplanner-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mealplanner
+      POSTGRES_USER: mealplanner
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mealplanner"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: mealplanner-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATASOURCE_URL: jdbc:postgresql://postgres:5432/mealplanner
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "8081:8081"
+
+volumes:
+  postgres_data:
